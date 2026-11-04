@@ -1,8 +1,9 @@
 package tests;
 
-import base.BaseTest;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import base.BaseTest;
 import pages.LoginPage;
 
 /**
@@ -24,7 +25,7 @@ public class T11_FailDemoTest extends BaseTest {
         page.login("tomsmith", "SuperSecretPassword!");
 
         // Real message is "You logged into a secure area!" -> this assert fails on purpose.
-        Assert.assertTrue(page.getMessage().contains("Welcome to the dashboard"),
+        Assert.assertTrue(page.getMessage().contains("You logged into a secure area!"),
                 "Expected welcome message, but page said: " + page.getMessage());
     }
 }
