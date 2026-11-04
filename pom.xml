@@ -12,6 +12,8 @@
     <properties>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Which TestNG suite file to run. Change on the command line: mvnw test -Dsuite=testng-crossbrowser.xml -->
+        <suite>testng.xml</suite>
     </properties>
 
     <dependencies>
@@ -19,7 +21,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>4.25.0</version>
+            <version>4.52.0</version>
         </dependency>
         <!-- TestNG: runs the tests, gives @Test, asserts, data providers, reports. -->
         <dependency>
@@ -38,7 +40,7 @@
                 <version>3.2.5</version>
                 <configuration>
                     <suiteXmlFiles>
-                        <suiteXmlFile>testng.xml</suiteXmlFile>
+                        <suiteXmlFile>${suite}</suiteXmlFile>
                     </suiteXmlFiles>
                 </configuration>
             </plugin>

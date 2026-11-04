@@ -21,7 +21,18 @@
             "type": "shell",
             "command": "./mvnw",
             "windows": { "command": ".\\mvnw.cmd" },
-            "args": ["test", "-Dslow=0"],
+            "args": ["test", { "value": "-Dslow=0", "quoting": "strong" }],
+            "group": "build",
+            "presentation": { "reveal": "always", "clear": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run cross-browser (Chrome + Edge)",
+            "detail": "testng-crossbrowser.xml: same tests in Chrome AND Edge at the same time",
+            "type": "shell",
+            "command": "./mvnw",
+            "windows": { "command": ".\\mvnw.cmd" },
+            "args": ["test", { "value": "-Dsuite=testng-crossbrowser.xml", "quoting": "strong" }],
             "group": "build",
             "presentation": { "reveal": "always", "clear": true },
             "problemMatcher": []
@@ -32,7 +43,7 @@
             "type": "shell",
             "command": "./mvnw",
             "windows": { "command": ".\\mvnw.cmd" },
-            "args": ["test", "-Dheadless=true", "-Dslow=0"],
+            "args": ["test", { "value": "-Dheadless=true", "quoting": "strong" }, { "value": "-Dslow=0", "quoting": "strong" }],
             "group": "build",
             "presentation": { "reveal": "always", "clear": true },
             "problemMatcher": []

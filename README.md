@@ -10,7 +10,8 @@ https://the-internet.herokuapp.com.
 
 ## Run with a button (VS Code, no Maven install needed)
 - **Ctrl+Shift+B** → runs `testng.xml` (parallel, 3 browsers, slow mode).
-- **Terminal → Run Task…** → pick *Run all tests - fast* or *Run all tests - headless*.
+- **Terminal → Run Task…** → pick *Run all tests - fast*, *Run all tests - headless*, or *Run cross-browser (Chrome + Edge)*.
+- One browser for everything: add `-Dbrowser=edge` (or `firefox`) to the command.
 - Or the **MAVEN** panel in the Explorer → `selenium-basics` → Lifecycle → **test** ▶.
 - These use the Maven Wrapper (`mvnw` / `mvnw.cmd`): the first run downloads Maven once (~10 MB).
 - The green ▶ next to a test runs just that test, but does **not** read `testng.xml` (so no parallel).
@@ -40,6 +41,7 @@ https://the-internet.herokuapp.com.
 | 11 | `T11_FailDemoTest` | Fails on purpose: failure report + auto screenshot (`screenshots/FAILED_*.png`) |
 | — | `testng.xml` | Choose which tests run (the suite); `parallel="methods" thread-count="3"` |
 | 13 | `driver/DriverFactory.java` | ThreadLocal: one browser per thread, so parallel tests don't mix browsers |
+| 14 | `testng-crossbrowser.xml` | Cross-browser: same tests in Chrome + Edge at once (`parallel="tests"` + `browser` parameter) |
 | 12 | `.github/workflows/selenium-tests.yml` | CI: run all tests on every GitHub push |
 
 ## Try next (practice)

@@ -6,13 +6,13 @@ import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.events.EventFiringDecorator;
 import org.openqa.selenium.support.events.WebDriverListener;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,8 @@ import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 
 /**
- * Every test class extends this. It opens Chrome before each test and closes it after.
+ * Every test class extends this. It opens a browser before each test and closes it after.
+ * Browser: chrome by default; edge/firefox via the testng xml parameter or -Dbrowser=edge.
  * Run without a visible browser (needed in CI): mvn test -Dheadless=true
  *
  * Slow mode (for learning): every click / typing is outlined in red and pauses SLOW_MS,
@@ -43,20 +44,23 @@ public class BaseTest {
         return DriverFactory.getDriver();
     }
 
+    /**
+     * Which browser? 1) <parameter name="browser"> in the testng xml (cross-browser suite),
+     * 2) else -Dbrowser=edge on the command line, 3) else chrome (also for the VS Code ▶ button).
+     */
     @BeforeMethod
-    public void setUp(Method method) {
-        ChromeOptions options = new ChromeOptions();
-        if (Boolean.getBoolean("headless")) {
-            options.addArguments("--headless=new", "--window-size=1920,1080");
-        }
-        WebDriver chrome = new ChromeDriver(options);
-        WebDriver driver = SLOW_MS > 0 ? new EventFiringDecorator<WebDriver>(new SlowMotion(chrome)).decorate(chrome) : chrome;
+    @Parameters("browser")
+    public void setUp(@Optional("") String browserParam, Method method) {
+        String browser = browserParam.isEmpty() ? System.getProperty("browser", "chrome") : browserParam;
+
+        WebDriver real = DriverFactory.createDriver(browser);
+        WebDriver driver = SLOW_MS > 0 ? new EventFiringDecorator<WebDriver>(new SlowMotion(real)).decorate(real) : real;
         driver.manage().window().maximize();
         // Implicit wait: findElement retries up to 5 s before failing. Keep it small.
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-        DriverFactory.setDriver(driver);   // put this browser in THIS thread's locker
+        DriverFactory.setDriver(driver, browser);   // put this browser in THIS thread's locker
 
-        log("started Chrome for " + getClass().getSimpleName() + "." + method.getName());
+        log("started " + browser + " for " + getClass().getSimpleName() + "." + method.getName());
     }
 
     /**
@@ -70,7 +74,8 @@ public class BaseTest {
                 saveFailureScreenshot(result);
             }
             pause(SLOW_MS * 2);           // see the final page before it closes
-            log("closing Chrome for " + getClass().getSimpleName() + "." + result.getMethod().getMethodName());
+            log("closing " + DriverFactory.getBrowserName() + " for "
+                    + getClass().getSimpleName() + "." + result.getMethod().getMethodName());
             DriverFactory.quitDriver();   // quit() closes every window; close() would close only one
         }
     }
@@ -84,9 +89,9 @@ public class BaseTest {
         System.out.println("[" + Thread.currentThread().getName() + "] " + message);
     }
 
-    /** Saves screenshots/FAILED_<Class>_<method>.png. CI uploads this folder with the reports. */
+    /** Saves screenshots/FAILED_<browser>_<Class>_<method>.png. CI uploads this folder with the reports. */
     private void saveFailureScreenshot(ITestResult result) {
-        String name = "FAILED_" + result.getTestClass().getRealClass().getSimpleName()
+        String name = "FAILED_" + DriverFactory.getBrowserName() + "_" + result.getTestClass().getRealClass().getSimpleName()
                 + "_" + result.getMethod().getMethodName() + ".png";
         try {
             File temp = ((TakesScreenshot) getDriver()).getScreenshotAs(OutputType.FILE);
