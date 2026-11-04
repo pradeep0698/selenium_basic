@@ -1,5 +1,6 @@
 package base;
 
+import driver.DriverFactory;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -15,6 +16,7 @@ import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -31,20 +33,30 @@ public class BaseTest {
 
     private static final long SLOW_MS = Long.getLong("slow", 1000);
 
-    protected WebDriver driver;
     protected static final String BASE_URL = "https://the-internet.herokuapp.com";
 
+    /**
+     * Before: "protected WebDriver driver" field -> shared, breaks in parallel.
+     * Now: each thread keeps its own browser in DriverFactory (ThreadLocal). Tests call getDriver().
+     */
+    protected WebDriver getDriver() {
+        return DriverFactory.getDriver();
+    }
+
     @BeforeMethod
-    public void setUp() {
+    public void setUp(Method method) {
         ChromeOptions options = new ChromeOptions();
         if (Boolean.getBoolean("headless")) {
             options.addArguments("--headless=new", "--window-size=1920,1080");
         }
         WebDriver chrome = new ChromeDriver(options);
-        driver = SLOW_MS > 0 ? new EventFiringDecorator<WebDriver>(new SlowMotion(chrome)).decorate(chrome) : chrome;
+        WebDriver driver = SLOW_MS > 0 ? new EventFiringDecorator<WebDriver>(new SlowMotion(chrome)).decorate(chrome) : chrome;
         driver.manage().window().maximize();
         // Implicit wait: findElement retries up to 5 s before failing. Keep it small.
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        DriverFactory.setDriver(driver);   // put this browser in THIS thread's locker
+
+        log("started Chrome for " + getClass().getSimpleName() + "." + method.getName());
     }
 
     /**
@@ -53,17 +65,23 @@ public class BaseTest {
      */
     @AfterMethod
     public void tearDown(ITestResult result) {
-        if (driver != null) {
+        if (getDriver() != null) {
             if (result.getStatus() == ITestResult.FAILURE) {
                 saveFailureScreenshot(result);
             }
-            pause(SLOW_MS * 2);  // see the final page before it closes
-            driver.quit();       // quit() closes every window and ends the session; close() closes only one window
+            pause(SLOW_MS * 2);           // see the final page before it closes
+            log("closing Chrome for " + getClass().getSimpleName() + "." + result.getMethod().getMethodName());
+            DriverFactory.quitDriver();   // quit() closes every window; close() would close only one
         }
     }
 
     protected void open(String path) {
-        driver.get(BASE_URL + path);
+        getDriver().get(BASE_URL + path);
+    }
+
+    /** Prints with the thread name, so in parallel runs you can see which thread did what. */
+    private static void log(String message) {
+        System.out.println("[" + Thread.currentThread().getName() + "] " + message);
     }
 
     /** Saves screenshots/FAILED_<Class>_<method>.png. CI uploads this folder with the reports. */
@@ -71,7 +89,7 @@ public class BaseTest {
         String name = "FAILED_" + result.getTestClass().getRealClass().getSimpleName()
                 + "_" + result.getMethod().getMethodName() + ".png";
         try {
-            File temp = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            File temp = ((TakesScreenshot) getDriver()).getScreenshotAs(OutputType.FILE);
             Path target = Path.of("screenshots", name);
             Files.createDirectories(target.getParent());
             Files.copy(temp.toPath(), target, StandardCopyOption.REPLACE_EXISTING);

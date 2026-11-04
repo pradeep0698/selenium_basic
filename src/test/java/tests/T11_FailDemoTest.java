@@ -21,7 +21,7 @@ public class T11_FailDemoTest extends BaseTest {
 
     @Test(description = "Fails on purpose: expects a message the page never shows")
     public void wrongExpectedMessage() {
-        LoginPage page = new LoginPage(driver).open();
+        LoginPage page = new LoginPage(getDriver()).open();
         page.login("tomsmith", "SuperSecretPassword!");
 
         // Real message is "You logged into a secure area!" -> this assert fails on purpose.

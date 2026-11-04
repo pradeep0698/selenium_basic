@@ -15,21 +15,21 @@ public class T02_ActionsTest extends BaseTest {
     public void typeClearAndClick() {
         open("/login");
 
-        WebElement user = driver.findElement(By.id("username"));
+        WebElement user = getDriver().findElement(By.id("username"));
         user.sendKeys("wrong-user");                       // type
         Assert.assertEquals(user.getAttribute("value"), "wrong-user");
         user.clear();                                       // clear
         Assert.assertEquals(user.getAttribute("value"), "");
 
-        driver.findElement(By.cssSelector("button[type='submit']")).click(); // click
-        String msg = driver.findElement(By.id("flash")).getText();           // read text
+        getDriver().findElement(By.cssSelector("button[type='submit']")).click(); // click
+        String msg = getDriver().findElement(By.id("flash")).getText();           // read text
         Assert.assertTrue(msg.contains("Your username is invalid!"));
     }
 
     @Test
     public void checkboxes() {
         open("/checkboxes");
-        WebElement first = driver.findElement(By.cssSelector("#checkboxes input:nth-of-type(1)"));
+        WebElement first = getDriver().findElement(By.cssSelector("#checkboxes input:nth-of-type(1)"));
         Assert.assertFalse(first.isSelected());
         first.click();
         Assert.assertTrue(first.isSelected());               // state checks: isSelected, isEnabled, isDisplayed
@@ -38,10 +38,10 @@ public class T02_ActionsTest extends BaseTest {
     @Test
     public void browserCommands() {
         open("/");
-        Assert.assertEquals(driver.getTitle(), "The Internet");
-        driver.findElement(By.linkText("Checkboxes")).click();
-        Assert.assertTrue(driver.getCurrentUrl().endsWith("/checkboxes"));
-        driver.navigate().back();                           // also: forward(), refresh()
-        Assert.assertTrue(driver.getCurrentUrl().endsWith("herokuapp.com/"));
+        Assert.assertEquals(getDriver().getTitle(), "The Internet");
+        getDriver().findElement(By.linkText("Checkboxes")).click();
+        Assert.assertTrue(getDriver().getCurrentUrl().endsWith("/checkboxes"));
+        getDriver().navigate().back();                           // also: forward(), refresh()
+        Assert.assertTrue(getDriver().getCurrentUrl().endsWith("herokuapp.com/"));
     }
 }

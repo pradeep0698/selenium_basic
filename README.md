@@ -31,11 +31,11 @@ https://the-internet.herokuapp.com.
 | 9 | `pages/LoginPage` + `T09_PageObjectLoginTest` | Page Object Model, priority, groups |
 | 10 | `T10_DataDrivenTest` | @DataProvider: one test, many data rows |
 | 11 | `T11_FailDemoTest` | Fails on purpose: failure report + auto screenshot (`screenshots/FAILED_*.png`) |
-| — | `testng.xml` | Choose which tests run (the suite) |
+| — | `testng.xml` | Choose which tests run (the suite); `parallel="methods" thread-count="3"` |
+| 13 | `driver/DriverFactory.java` | ThreadLocal: one browser per thread, so parallel tests don't mix browsers |
 | 12 | `.github/workflows/selenium-tests.yml` | CI: run all tests on every GitHub push |
 
 ## Try next (practice)
 - Make a test fail on purpose and read the error.
 - Add a `SecureAreaPage` page object with a `logout()` method.
 - Run only the smoke group: add `<groups><run><include name="smoke"/></run></groups>` inside `<test>` in `testng.xml`.
-- Add `parallel="classes" thread-count="3"` to `<suite>` to run tests in parallel.

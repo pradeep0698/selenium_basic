@@ -24,7 +24,7 @@ public class T10_DataDrivenTest extends BaseTest {
 
     @Test(dataProvider = "loginData")
     public void login(String user, String pass, String expected) {
-        LoginPage page = new LoginPage(driver).open();
+        LoginPage page = new LoginPage(getDriver()).open();
         page.login(user, pass);
         Assert.assertTrue(page.getMessage().contains(expected),
                 "For " + user + "/" + pass + " got: " + page.getMessage());

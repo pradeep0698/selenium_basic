@@ -21,9 +21,9 @@ public class T03_WaitsTest extends BaseTest {
     @Test
     public void explicitWaitForHiddenElement() {
         open("/dynamic_loading/1");
-        driver.findElement(By.cssSelector("#start button")).click();
+        getDriver().findElement(By.cssSelector("#start button")).click();
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
         WebElement result = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("finish")));
 
         Assert.assertEquals(result.getText(), "Hello World!");
@@ -32,9 +32,9 @@ public class T03_WaitsTest extends BaseTest {
     @Test
     public void explicitWaitForElementAddedLater() {
         open("/dynamic_loading/2");
-        driver.findElement(By.cssSelector("#start button")).click();
+        getDriver().findElement(By.cssSelector("#start button")).click();
 
-        WebElement result = new WebDriverWait(driver, Duration.ofSeconds(10))
+        WebElement result = new WebDriverWait(getDriver(), Duration.ofSeconds(10))
                 .until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#finish h4")));
 
         Assert.assertEquals(result.getText(), "Hello World!");

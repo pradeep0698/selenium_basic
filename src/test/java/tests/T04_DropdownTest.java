@@ -14,7 +14,7 @@ public class T04_DropdownTest extends BaseTest {
     @Test
     public void selectOptions() {
         open("/dropdown");
-        Select dropdown = new Select(driver.findElement(By.id("dropdown")));
+        Select dropdown = new Select(getDriver().findElement(By.id("dropdown")));
 
         dropdown.selectByVisibleText("Option 1");
         Assert.assertEquals(dropdown.getFirstSelectedOption().getText(), "Option 1");

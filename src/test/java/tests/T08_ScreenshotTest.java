@@ -21,7 +21,7 @@ public class T08_ScreenshotTest extends BaseTest {
     @Test
     public void takeScreenshot() throws IOException {
         open("/");
-        File temp = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        File temp = ((TakesScreenshot) getDriver()).getScreenshotAs(OutputType.FILE);
         Path target = Path.of("screenshots", "home.png");
         Files.createDirectories(target.getParent());
         Files.copy(temp.toPath(), target, StandardCopyOption.REPLACE_EXISTING);

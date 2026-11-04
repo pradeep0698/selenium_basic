@@ -13,14 +13,14 @@ public class T09_PageObjectLoginTest extends BaseTest {
 
     @Test(priority = 1, description = "Valid user can log in", groups = "smoke")
     public void validLogin() {
-        LoginPage page = new LoginPage(driver).open();
+        LoginPage page = new LoginPage(getDriver()).open();
         page.login("tomsmith", "SuperSecretPassword!");
         Assert.assertTrue(page.getMessage().contains("You logged into a secure area!"));
     }
 
     @Test(priority = 2, description = "Wrong password shows an error", groups = "regression")
     public void wrongPassword() {
-        LoginPage page = new LoginPage(driver).open();
+        LoginPage page = new LoginPage(getDriver()).open();
         page.login("tomsmith", "wrong");
         Assert.assertTrue(page.getMessage().contains("Your password is invalid!"));
     }
