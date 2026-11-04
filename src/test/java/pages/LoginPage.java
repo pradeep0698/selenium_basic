@@ -12,7 +12,7 @@ public class LoginPage {
 
     private final WebDriver driver;
 
-    private final By username = By.id("username123");
+    private final By username = By.id("username");
     private final By password = By.id("password");
     private final By loginButton = By.cssSelector("button[type='submit']");
     private final By message = By.id("flash");
