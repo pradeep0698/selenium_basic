@@ -1,0 +1,41 @@
+{
+    // Buttons to run testng.xml (parallel) without typing commands.
+    // Use: Ctrl+Shift+B = default task, or Terminal -> Run Task... -> pick one.
+    // They call the Maven Wrapper (mvnw), the same way GitHub Actions runs the tests.
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run all tests (parallel)",
+            "detail": "testng.xml, visible Chrome, slow mode (red outline + pauses)",
+            "type": "shell",
+            "command": "./mvnw",
+            "windows": { "command": ".\\mvnw.cmd" },
+            "args": ["test"],
+            "group": { "kind": "build", "isDefault": true },
+            "presentation": { "reveal": "always", "clear": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run all tests - fast",
+            "detail": "testng.xml, visible Chrome, no pauses",
+            "type": "shell",
+            "command": "./mvnw",
+            "windows": { "command": ".\\mvnw.cmd" },
+            "args": ["test", "-Dslow=0"],
+            "group": "build",
+            "presentation": { "reveal": "always", "clear": true },
+            "problemMatcher": []
+        },
+        {
+            "label": "Run all tests - headless",
+            "detail": "testng.xml, no browser windows, full speed (like GitHub)",
+            "type": "shell",
+            "command": "./mvnw",
+            "windows": { "command": ".\\mvnw.cmd" },
+            "args": ["test", "-Dheadless=true", "-Dslow=0"],
+            "group": "build",
+            "presentation": { "reveal": "always", "clear": true },
+            "problemMatcher": []
+        }
+    ]
+}

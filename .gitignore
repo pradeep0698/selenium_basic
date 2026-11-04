@@ -7,7 +7,12 @@ screenshots/
 # IDE files
 .idea/
 *.iml
-.vscode/
+# keep .vscode/tasks.json (the run buttons), ignore other VS Code files
+.vscode/*
+!.vscode/tasks.json
+
+# manual javac output
+out/
 
 # VS Code Java-upgrade tool files
 .github/modernize/

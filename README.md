@@ -8,6 +8,13 @@ https://the-internet.herokuapp.com.
 2. Copy this `selenium-basics` folder to your Desktop.
 3. IntelliJ → **File → Open** → pick the `selenium-basics` folder → wait for Maven to download the libraries.
 
+## Run with a button (VS Code, no Maven install needed)
+- **Ctrl+Shift+B** → runs `testng.xml` (parallel, 3 browsers, slow mode).
+- **Terminal → Run Task…** → pick *Run all tests - fast* or *Run all tests - headless*.
+- Or the **MAVEN** panel in the Explorer → `selenium-basics` → Lifecycle → **test** ▶.
+- These use the Maven Wrapper (`mvnw` / `mvnw.cmd`): the first run downloads Maven once (~10 MB).
+- The green ▶ next to a test runs just that test, but does **not** read `testng.xml` (so no parallel).
+
 ## Run
 - **One test:** open a file in `src/test/java/tests/`, click the green ▶ next to the class or a method.
 - **All tests:** right-click `testng.xml` → **Run**.
