@@ -1,0 +1,17 @@
+# Maven build output (recreated on every "mvn test")
+target/
+
+# Screenshots are produced by test runs (CI uploads them as an artifact)
+screenshots/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# VS Code Java-upgrade tool files
+.github/modernize/
+
+# OS junk
+.DS_Store
+Thumbs.db

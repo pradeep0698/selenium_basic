@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- The list of tests TestNG runs. Comment out a class to skip it. -->
+<suite name="Selenium Basics">
+    <test name="All topics">
+        <classes>
+            <class name="tests.T01_LocatorsTest"/>
+            <class name="tests.T02_ActionsTest"/>
+            <class name="tests.T03_WaitsTest"/>
+            <class name="tests.T04_DropdownTest"/>
+            <class name="tests.T05_AlertsTest"/>
+            <class name="tests.T06_FramesWindowsTest"/>
+            <class name="tests.T07_MouseKeyboardTest"/>
+            <class name="tests.T08_ScreenshotTest"/>
+            <class name="tests.T09_PageObjectLoginTest"/>
+            <class name="tests.T10_DataDrivenTest"/>
+        </classes>
+    </test>
+</suite>
