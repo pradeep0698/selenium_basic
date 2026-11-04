@@ -1,23 +1,73 @@
-# Topic 12: CI. When this project is its own GitHub repo, every push runs all tests
-# on a GitHub server in headless Chrome and keeps the reports.
+# Topic 12: CI. Every push runs all tests on a GitHub server in headless Chrome and keeps the reports.
+#
+# "Server details" = the settings below:
+#   runs-on       -> which machine/OS (ubuntu-latest, windows-latest, macos-latest)
+#   java-version  -> which Java is installed
+#   run           -> the exact test command
+#
+# On a normal push: Ubuntu + Java 17 + testng.xml.
+# To try another server without editing this file: GitHub -> Actions -> "Selenium tests"
+#   -> "Run workflow" button -> pick OS / Java / suite from the dropdowns.
 name: Selenium tests
 
 on:
   push:
   pull_request:
+  workflow_dispatch:            # adds the "Run workflow" button
+    inputs:
+      os:
+        description: "Server (runner) operating system"
+        type: choice
+        options: [ubuntu-latest, windows-latest, macos-latest]
+        default: ubuntu-latest
+      java:
+        description: "Java version"
+        type: choice
+        options: ["17", "21", "23"]
+        default: "17"
+      suite:
+        description: "TestNG suite file"
+        type: choice
+        options: [testng.xml, testng-crossbrowser.xml]
+        default: testng.xml
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # inputs.* is empty on push/pull_request, so the value after || is the default
+    runs-on: ${{ inputs.os || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: ${{ inputs.java || '17' }}
           cache: maven
+
+      # Prints the server details at the top of every run, to compare with your laptop
+      # when "it passes locally but fails in CI".
+      - name: Show environment
+        shell: bash
+        run: |
+          echo "Runner OS : $RUNNER_OS  (image: ${ImageOS:-?} ${ImageVersion:-})"
+          echo "Suite     : ${{ inputs.suite || 'testng.xml' }}"
+          java -version 2>&1 | head -1
+          case "$RUNNER_OS" in
+            Windows) ./mvnw.cmd -v | head -1
+                     powershell -Command "'Chrome ' + (Get-Item 'C:\Program Files\Google\Chrome\Application\chrome.exe').VersionInfo.ProductVersion" ;;
+            macOS)   ./mvnw -v | head -1
+                     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --version ;;
+            *)       ./mvnw -v | head -1
+                     google-chrome --version ;;
+          esac
+
+      # Same Maven Wrapper (Maven 3.9.9) as on the laptop, so local and CI use the same build tool.
       - name: Run tests
-        run: mvn -B test -Dheadless=true -Dslow=0
+        shell: bash
+        run: |
+          ARGS="-B test -Dheadless=true -Dslow=0 -Dsuite=${{ inputs.suite || 'testng.xml' }}"
+          if [ "$RUNNER_OS" = "Windows" ]; then ./mvnw.cmd $ARGS; else ./mvnw $ARGS; fi
+
       - name: Keep test reports
         if: always()
         uses: actions/upload-artifact@v4
