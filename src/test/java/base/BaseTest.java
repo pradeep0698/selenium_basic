@@ -1,15 +1,23 @@
 package base;
 
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.events.EventFiringDecorator;
 import org.openqa.selenium.support.events.WebDriverListener;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 
 /**
@@ -39,9 +47,16 @@ public class BaseTest {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
     }
 
+    /**
+     * TestNG passes ITestResult = the outcome of the test that just ran.
+     * If it failed, save a screenshot BEFORE quitting the browser (after quit() there is no page to capture).
+     */
     @AfterMethod
-    public void tearDown() {
+    public void tearDown(ITestResult result) {
         if (driver != null) {
+            if (result.getStatus() == ITestResult.FAILURE) {
+                saveFailureScreenshot(result);
+            }
             pause(SLOW_MS * 2);  // see the final page before it closes
             driver.quit();       // quit() closes every window and ends the session; close() closes only one window
         }
@@ -49,6 +64,22 @@ public class BaseTest {
 
     protected void open(String path) {
         driver.get(BASE_URL + path);
+    }
+
+    /** Saves screenshots/FAILED_<Class>_<method>.png. CI uploads this folder with the reports. */
+    private void saveFailureScreenshot(ITestResult result) {
+        String name = "FAILED_" + result.getTestClass().getRealClass().getSimpleName()
+                + "_" + result.getMethod().getMethodName() + ".png";
+        try {
+            File temp = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            Path target = Path.of("screenshots", name);
+            Files.createDirectories(target.getParent());
+            Files.copy(temp.toPath(), target, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Test failed, screenshot saved: " + target.toAbsolutePath());
+        } catch (IOException | RuntimeException e) {
+            // never let a screenshot problem hide the real test failure
+            System.out.println("Could not save failure screenshot: " + e.getMessage());
+        }
     }
 
     private static void pause(long ms) {

@@ -30,7 +30,8 @@ https://the-internet.herokuapp.com.
 | 8 | `T08_ScreenshotTest` | Save a screenshot |
 | 9 | `pages/LoginPage` + `T09_PageObjectLoginTest` | Page Object Model, priority, groups |
 | 10 | `T10_DataDrivenTest` | @DataProvider: one test, many data rows |
-| 11 | `testng.xml` | Choose which tests run (the suite) |
+| 11 | `T11_FailDemoTest` | Fails on purpose: failure report + auto screenshot (`screenshots/FAILED_*.png`) |
+| — | `testng.xml` | Choose which tests run (the suite) |
 | 12 | `.github/workflows/selenium-tests.yml` | CI: run all tests on every GitHub push |
 
 ## Try next (practice)
